@@ -18,6 +18,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
+const ALLOWED_HOST = NODE_ENV === 'production' ? process.env.SMTP_ALLOWED_HOST : 'http://localhost:3000'
+
+const corsOptions = {
+    origin: ALLOWED_HOST,
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
 app.get('/', (req, res) => {
   console.log(req)
   res.status(200).json({data: "Hello World"})
@@ -46,13 +53,6 @@ nodeMailerTransport.verify((error) => {
     console.log("Ready to send email");
   }
 });
-
-const ALLOWED_HOST = NODE_ENV === 'production' ? process.env.SMTP_ALLOWED_HOST : 'http://localhost:3000'
-
-const corsOptions = {
-    origin: ALLOWED_HOST,
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", ALLOWED_HOST); // update to match the domain you will make the request from

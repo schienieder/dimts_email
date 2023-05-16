@@ -47,10 +47,18 @@ nodeMailerTransport.verify((error) => {
   }
 });
 
+const ALLOWED_HOST = NODE_ENV === 'production' ? process.env.SMTP_ALLOWED_HOST : 'http://localhost:3000'
+
 const corsOptions = {
-    origin: NODE_ENV === 'production' ? process.env.SMTP_ALLOWED_HOST : 'http://localhost:3000/',
+    origin: ALLOWED_HOST,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", ALLOWED_HOST); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 app.post('/send-email', cors(corsOptions), async (req, res) => {
   console.log("Send email post request")
@@ -334,6 +342,8 @@ app.post('/send-email', cors(corsOptions), async (req, res) => {
     </body>
     </html>`, // html body`,
   };
+
+  res.setHeader('Access-Control-Allow-Origin', ALLOWED_HOST);
 
   try {
     await nodeMailerTransport.sendMail(emailConfig);

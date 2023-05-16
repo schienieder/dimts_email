@@ -18,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
+const NODE_ENV = app.get('env')
 const ALLOWED_HOST = NODE_ENV === 'production' ? process.env.SMTP_ALLOWED_HOST : 'http://localhost:3000'
 
 const corsOptions = {
@@ -33,7 +34,7 @@ app.get('/', (req, res) => {
 
 const EMAIL = process.env.SMTP_EMAIL;
 const EMAIL_PASSWORD = process.env.SMTP_PASSWORD;
-const NODE_ENV = app.get('env')
+
 
 const nodeMailerTransport = nodeMailer.createTransport({
   host: "smtp.gmail.com",

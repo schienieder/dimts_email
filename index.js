@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 // ALLOW ALL CORS REQUESTS
-app.use(cors())
+// app.use(cors())
 
 // PARSE APPLICATION/JSON
 app.use(bodyParser.json())
@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 
 const EMAIL = process.env.SMTP_EMAIL;
 const EMAIL_PASSWORD = process.env.SMTP_PASSWORD;
-// const NODE_ENV = app.get('env')
+const NODE_ENV = app.get('env')
 
 const nodeMailerTransport = nodeMailer.createTransport({
   host: "smtp.gmail.com",
@@ -47,7 +47,13 @@ nodeMailerTransport.verify((error) => {
   }
 });
 
-app.post('/send-email', async (req, res) => {
+const corsOptions = {
+    origin: NODE_ENV === 'production' ? process.env.SMTP_ALLOWED_HOST : 'http://localhost:3000/',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
+app.post('/send-email', cors(corsOptions), async (req, res) => {
+  console.log("Send email post request")
   let data = req.body
   const emailConfig = {
     from: `DIMTS <${EMAIL}>`,

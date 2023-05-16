@@ -4,9 +4,9 @@ const port = 5000
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const nodeMailer = require('nodemailer')
+require('dotenv').config();
 // const axios = require('axios')
 
-app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -23,11 +23,13 @@ app.get('/', (req, res) => {
   res.status(200).json({data: "Hello World"})
 })
 
-const EMAIL = "schieniezel@gmail.com";
-const EMAIL_PASSWORD = "wqeppsdnwuxhoqbl";
+
+const EMAIL = process.env.SMTP_EMAIL;
+const EMAIL_PASSWORD = process.env.SMTP_PASSWORD;
 // const NODE_ENV = app.get('env')
 
 const nodeMailerTransport = nodeMailer.createTransport({
+  host: "smtp.gmail.com",
   service: "gmail",
   port: 465,
   secure: true, // true for 465, false for other ports
@@ -48,7 +50,7 @@ nodeMailerTransport.verify((error) => {
 app.post('/send-email', async (req, res) => {
   let data = req.body
   const emailConfig = {
-    from: `DIMTS`,
+    from: `DIMTS <${EMAIL}>`,
     to: "schieniezel@gmail.com",
     subject: `Transfered Document - ${data.case_no}`,
     html: `<!DOCTYPE html>
@@ -301,7 +303,7 @@ app.post('/send-email', async (req, res) => {
                             <td>
                                 <div class="text" style="padding: 0 2.5em;">
                                     <h2 style="margin-bottom: 1rem;">Dear ${data.office_name},</h2>
-                                    <h3 style="font-weight: 300;">This is a confirmation email that the document for case ${data.case_no} has been delivered to you successfully.</h3>
+                                    <h3 style="font-weight: 300;">This is a confirmation email that the document for case <span style="font-weight: 700;">${data.case_no}</span> has been delivered to you successfully.</h3>
                                     <h3 style="font-weight: 300;">Please respond by entering the QR Code Tracker indicated below in your DIMTS account.</h3>
                                     <div style="width:100%;">
                                       <center>

@@ -62,11 +62,10 @@ app.use(function(req, res, next) {
 });
 
 app.post('/send-email', cors(corsOptions), async (req, res) => {
-  console.log("Send email post request")
   let data = req.body
   const emailConfig = {
     from: `DIMTS <${EMAIL}>`,
-    to: "schieniezel@gmail.com",
+    to: `${data.recipient}`,
     subject: `Transfered Document - ${data.case_no}`,
     html: `<!DOCTYPE html>
     <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
